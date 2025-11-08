@@ -28,7 +28,6 @@
 <header>BIBLIOTECA DE LÍNGUA DE SINAIS MOÇAMBIQUE</header>
 
 <div class="Imagens" id="imagemContainer">
-  <!-- imagem principal agora está na mesma pasta do HTML -->
   <img id="imgSequencia" src="imagem1.png" alt="imagem principal">
 </div>
 
@@ -48,12 +47,12 @@
 <a href="Pagina Inicial.html">Informações</a>
 
 <footer>
-  <p>Biblioteca de sinas, Direitos Reservados 2025</p>
+  <p>Biblioteca de sinais, Direitos Reservados 2025</p>
 </footer>
 
 <script>
   const img = document.getElementById("imgSequencia");
-  const imagemOriginal = "/data/imagem1.png";
+  const imagemOriginal = "imagem1.png"; // imagem principal local
   const fps = 12;
   const intervalo = 1000 / fps;
   let animacaoBusca = null;
@@ -73,13 +72,12 @@
     pararAnimacoes();
 
     try {
-      // Faz uma requisição ao servidor para obter a lista de imagens da pasta do termo
+      // Requisição para obter lista de imagens
       const resposta = await fetch(`/imagens/${termo.toUpperCase()}`);
       const html = await resposta.text();
-
-      // Extraí os nomes das imagens do HTML retornado pelo servidor
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
+
       const links = [...doc.querySelectorAll('a')]
         .map(a => a.getAttribute('href'))
         .filter(nome => nome.match(/\.(png|jpg|jpeg|gif)$/i))
@@ -92,14 +90,21 @@
       }
 
       let index = 0;
+      let repeticoes = 0;
+      const totalRepeticoes = 3; // repetir 3 vezes
+
       animacaoBusca = setInterval(() => {
-        if (index >= links.length) {
-          clearInterval(animacaoBusca);
-          img.src = imagemOriginal; // volta à imagem principal
-          return;
-        }
         img.src = links[index];
         index++;
+
+        if (index >= links.length) {
+          index = 0;
+          repeticoes++;
+          if (repeticoes >= totalRepeticoes) {
+            clearInterval(animacaoBusca);
+            img.src = imagemOriginal; // volta à imagem principal
+          }
+        }
       }, intervalo);
 
     } catch (erro) {
@@ -108,8 +113,6 @@
     }
   }
 </script>
-
-
 
 </body>
 </html>
