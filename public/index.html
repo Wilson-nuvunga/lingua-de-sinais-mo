@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Língua de Sinais Moçambique</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #f2f8fc; color: #333; text-align: center; }
+    header { background-color: #00aaff; padding: 25px 10px; font-size: 24px; font-weight: bold; color: #ffffff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .Imagens { background-color: #ffffff; border-bottom: 1px solid #ddd; display: flex; justify-content: center; align-items: center; height: 400px; }
+    .Imagens img { width: 100%; height: 100%; object-fit: contain; }
+    .pesquisa { background-color: #e6f7ff; padding: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    input[type="text"] { padding: 12px; font-size: 16px; width: 220px; border: 1px solid #ccc; border-radius: 6px; }
+    button { padding: 12px 24px; font-size: 16px; background-color: #00aaff; color: #fff; border: none; border-radius: 6px; cursor: pointer; transition: background-color 0.3s; }
+    button:hover { background-color: #0088cc; }
+    .biblioteca { background-color: #007acc; color: white; font-weight: bold; font-size: 20px; padding: 15px 10px; margin-top: 20px; border-top-left-radius: 10px; border-top-right-radius: 10px; }
+    .caixa1 { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; padding: 30px 20px; background-color: #ffffff; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .caixa { background-color: #00d4ff; width: 160px; height: 100px; display: flex; align-items: center; justify-content: center; font-size: 18px; border-radius: 8px; color: #fff; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    a { display: inline-block; margin: 20px auto; padding: 10px 20px; background-color: black; color: white; border-radius: 6px; text-decoration: none; transition: background-color 0.3s; }
+    a:hover { background-color: #333; }
+    footer { background-color: #1a7edb; padding: 20px; color: white; text-align: left; font-size: 14px; }
+    @media (max-width: 600px) { .caixa { width: 100%; } .pesquisa { flex-direction: column; } }
+  </style>
+</head>
+<body>
+
+<header>BIBLIOTECA DE LÍNGUA DE SINAIS MOÇAMBIQUE</header>
+
+<div class="Imagens" id="imagemContainer">
+  <!-- imagem principal agora está na mesma pasta do HTML -->
+  <img id="imgSequencia" src="imagem1.png" alt="imagem principal">
+</div>
+
+<div class="pesquisa">
+  <input type="text" id="searchInput" placeholder="Digite uma letra ou palavra...">
+  <button onclick="buscar()">Pesquisar</button>
+</div>
+
+<div class="biblioteca">CATEGORIAS</div>
+<div class="caixa1">
+  <div class="caixa">Letra</div>
+  <div class="caixa">Saúde</div>
+  <div class="caixa">Alimentos</div>
+  <div class="caixa">Objectos</div>
+</div>
+
+<a href="Pagina Inicial.html">Informações</a>
+
+<footer>
+  <p>Biblioteca de sinas, Direitos Reservados 2025</p>
+</footer>
+
+<script>
+  const img = document.getElementById("imgSequencia");
+  const imagemOriginal = "/data/imagem1.png";
+  const fps = 12;
+  const intervalo = 1000 / fps;
+  let animacaoBusca = null;
+
+  function pararAnimacoes() {
+    clearInterval(animacaoBusca);
+    animacaoBusca = null;
+  }
+
+  async function buscar() {
+    const termo = document.getElementById('searchInput').value.trim();
+    if (!termo) return;
+    await animarSequencia(termo);
+  }
+
+  async function animarSequencia(termo) {
+    pararAnimacoes();
+
+    try {
+      // Faz uma requisição ao servidor para obter a lista de imagens da pasta do termo
+      const resposta = await fetch(`/imagens/${termo.toUpperCase()}`);
+      const html = await resposta.text();
+
+      // Extraí os nomes das imagens do HTML retornado pelo servidor
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const links = [...doc.querySelectorAll('a')]
+        .map(a => a.getAttribute('href'))
+        .filter(nome => nome.match(/\.(png|jpg|jpeg|gif)$/i))
+        .map(nome => `/imagens/${termo.toUpperCase()}/${nome}`);
+
+      if (links.length === 0) {
+        alert(`Nenhuma imagem encontrada para o termo "${termo}".`);
+        img.src = imagemOriginal;
+        return;
+      }
+
+      let index = 0;
+      animacaoBusca = setInterval(() => {
+        if (index >= links.length) {
+          clearInterval(animacaoBusca);
+          img.src = imagemOriginal; // volta à imagem principal
+          return;
+        }
+        img.src = links[index];
+        index++;
+      }, intervalo);
+
+    } catch (erro) {
+      alert("Erro ao carregar imagens. Verifica se o termo existe.");
+      img.src = imagemOriginal;
+    }
+  }
+</script>
+
+
+
+</body>
+</html>

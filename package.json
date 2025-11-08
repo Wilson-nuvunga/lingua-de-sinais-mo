@@ -1,0 +1,21 @@
+{
+  "name": "lingua-de-sinais-mo",
+  "version": "1.0.0",
+  "description": "Site de tradução de texto para língua de sinais moçambicana",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "lingua",
+    "sinais",
+    "node",
+    "express",
+    "moçambique"
+  ],
+  "author": "Wilson Nuvunga",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
